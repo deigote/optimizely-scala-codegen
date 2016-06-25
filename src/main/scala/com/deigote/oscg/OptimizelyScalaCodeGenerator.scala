@@ -2,10 +2,12 @@ package com.deigote.oscg
 
 import java.nio.charset.StandardCharsets
 
+import org.jtwig.JtwigModel
+import org.jtwig.JtwigTemplate
 import scala.util.parsing.json.{JSONObject, JSON}
 import scala.io.Source
 
-object CodeGenerator {
+object OptimizelyScalaCodeGenerator {
 
 	def main(args: Array[String]): Unit = main(args.toList)
 
