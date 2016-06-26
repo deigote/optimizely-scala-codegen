@@ -20,7 +20,6 @@ trait CodeGenerator {
 	protected def kebabToCamelCase(name: String): String =
 		"-([a-z\\d])".r.replaceAllIn(name, m => m.group(1).toUpperCase())
 
-
 	private def template(templatesPath: String): JtwigTemplate =
 		JtwigTemplate.classpathTemplate(s"${templatesPath}/${templateName}.twig")
 
@@ -29,5 +28,14 @@ trait CodeGenerator {
 
 	private def toJtwigModel(model: Map[String, Any]): JtwigModel =
 		model.foldLeft(new JtwigModel)((model, entry) => model.`with`(entry._1, entry._2))
+
+	protected def addClassNameFromKey(model: Map[String, Any]): Map[String, Any] =
+		model ++
+			model
+				.get("key")
+				.map(_.toString.capitalize)
+				.map(kebabToCamelCase)
+				.map(className => Map("className" -> className))
+				.getOrElse(Map())
 
 }

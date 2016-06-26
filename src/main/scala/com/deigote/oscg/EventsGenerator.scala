@@ -25,14 +25,6 @@ class EventsGenerator(val classesPackage: String, eventsClassName: Option[String
 			.list
 			.flatMap(JsonParser.extractObject)
 	  		.map(_.obj)
-		   .map(addClassName _ andThen mapAsJavaMap)
+		   .map(addClassNameFromKey _ andThen mapAsJavaMap)
 
-	def addClassName(eventModel: Map[String, Any]): Map[String, Any] =
-		eventModel ++
-			eventModel
-				.get("key")
-				.map(_.toString.capitalize)
-				.map(kebabToCamelCase)
-				.map(className => Map("className" -> className))
-				.getOrElse(Map())
 }
