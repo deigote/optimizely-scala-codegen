@@ -13,7 +13,8 @@ object OptimizelyScalaCodeGenerator {
 
 	private def main(args: List[String]): Unit =
 		main(
-			args.toList.lift(0).getOrElse(throw new IllegalArgumentException(emptyArgumentError("experiments-url")))
+			args.toList.lift(0).getOrElse(throw new IllegalArgumentException(emptyArgumentError("experiments-url"))),
+			args.toList.lift(1).getOrElse(throw new IllegalArgumentException(emptyArgumentError("package")))
 		)
 
 	private def main(experimentsUrl: String): Unit = println((
@@ -25,6 +26,6 @@ object OptimizelyScalaCodeGenerator {
 		Source.fromURL(url, StandardCharsets.UTF_8.toString).mkString
 
 	private def emptyArgumentError(argument: String) =
-		s"""Error! The argument ${argument} cannot be empty. Usage: sbt "run <experiments-url>""""
+		s"""Error! The argument ${argument} cannot be empty. Usage: sbt "run <experiments-url> <package>""""
 
 }
