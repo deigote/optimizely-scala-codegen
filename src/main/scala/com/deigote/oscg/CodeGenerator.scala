@@ -5,9 +5,11 @@ import scala.util.parsing.json.JSONObject
 
 trait CodeGenerator {
 
+	val classesPackage: String
 	val templateName: String
+	val templatesPath = "templates"
 
-	def generate(templatesPath: String, classesPackage: String, rootObject: JSONObject) =
+	def generate(rootObject: JSONObject) =
 		template(templatesPath).render(
 			toJtwigModel(commonModel(classesPackage) ++ model(rootObject)),
 			System.out

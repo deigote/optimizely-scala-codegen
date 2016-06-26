@@ -3,16 +3,18 @@ package com.deigote.oscg
 import scala.collection.JavaConversions.{seqAsJavaList, mapAsJavaMap}
 import scala.util.parsing.json.{JSONArray, JSONObject}
 
-object EventsGenerator extends CodeGenerator {
+class EventsGenerator(val classesPackage: String, eventsClassName: Option[String]) extends CodeGenerator {
 
 	override val templateName: String = "Events"
+	private val defaultClassName = "Event"
 	private val jsonArray = classOf[JSONArray]
 
-	override def model(rootObject: JSONObject): Map[String, Any] =
+	override def model(rootObject: JSONObject): Map[String, Any] = {
 		Map(
 			"events" -> seqAsJavaList(getEventsAsList(rootObject)),
-			"className" -> "Event"
+			"className" -> eventsClassName.getOrElse(defaultClassName)
 		)
+	}
 
 	def getEventsAsList(rootObject: JSONObject) =
 		rootObject
