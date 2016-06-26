@@ -17,15 +17,21 @@ object OptimizelyScalaCodeGenerator {
 			args.toList.lift(1).getOrElse(throw new IllegalArgumentException(emptyArgumentError("package")))
 		)
 
-	private def main(experimentsUrl: String): Unit = println((
+	private def main(experimentsUrl: String, classesPackage: String): Unit = (
 		fetchExperimentsDefinition _ andThen
-		JsonParser.parseObject
-	)(experimentsUrl))
+		JsonParser.parseObject andThen
+		generateCode(experimentsUrl)
+	)(experimentsUrl)
 
 	private def fetchExperimentsDefinition(url: String): String =
 		Source.fromURL(url, StandardCharsets.UTF_8.toString).mkString
 
+	private def generateCode(classesPackage: String)(root: JSONObject) =
+		generators.foreach(_.generate("templates", classesPackage, root))
+
 	private def emptyArgumentError(argument: String) =
 		s"""Error! The argument ${argument} cannot be empty. Usage: sbt "run <experiments-url> <package>""""
+
+	private val generators: Set[CodeGenerator] = Set(EventsGenerator)
 
 }
