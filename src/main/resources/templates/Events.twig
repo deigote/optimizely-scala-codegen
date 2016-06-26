@@ -1,0 +1,11 @@
+package {{ package }}
+
+import com.optimizely.ab.Optimizely
+
+abstract class {{ className }}(val key: String, val id: Long)
+
+object {{ className }}s {
+	{% for event in events %}
+	case object {{ event.className }} extends {{ className }}("{{ event.key }}", {{ event.id }}L)
+	{% endfor %}
+}
