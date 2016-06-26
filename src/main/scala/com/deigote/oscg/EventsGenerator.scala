@@ -20,7 +20,7 @@ class EventsGenerator(val classesPackage: String, eventsClassName: Option[String
 			.obj
 			.get("events")
 			.flatMap(JsonParser.extractArray)
-			.getOrElse(throw new IllegalArgumentException("couldn't find a JSON array when getting the 'events' object"))
+			.getOrElse(throw new IllegalArgumentException("couldn't find a JSON array when getting the 'events' array"))
 			.list
 			.flatMap(JsonParser.extractObject)
 	  		.map(_.obj)
