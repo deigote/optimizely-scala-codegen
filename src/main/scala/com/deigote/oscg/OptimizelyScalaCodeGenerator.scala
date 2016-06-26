@@ -33,7 +33,8 @@ object OptimizelyScalaCodeGenerator {
 		generators(config).foreach(_.generate(root))
 
 	private def generators(config: Config): Set[CodeGenerator] = Set(
-		new EventsGenerator(config.classesPackage, config.eventsClassName)
+		new EventsGenerator(config.classesPackage, config.eventsClassName),
+		new ExperimentsGenerator(config.classesPackage, config.experimentsClassName)
 	)
 
 	private def emptyArgumentError(argument: String) =

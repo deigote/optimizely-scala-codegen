@@ -1,0 +1,62 @@
+package {{ package }}
+
+import com.optimizely.ab.Optimizely
+import com.optimizely.ab.config.Variation
+import scala.util.Try
+
+abstract class {{ variationsClassName }}(val key: String, val id: Long)
+abstract class {{ className }}Configuration[V <: {{ variationsClassName }}](experiment: Experiment[V], val variant: V, val active: Boolean) {
+	def is(other: V) = variant == other
+	val experimentId: Long = experiment.id
+	val experimentKey: String = experiment.key
+	val variantId: Long = variant.id
+	val variantKey: String = variant.key
+}
+
+trait {{ className }}[V <: {{ variationsClassName }}] {
+
+	val key: String
+	val id: Long
+	val variants: Set[V]
+	val default{{ variationsClassName }}: V
+
+	def inactiveConfiguration(): Configuration =
+		Configuration(default{{ variationsClassName }}, false)
+
+	def configure(optimizely: Optimizely, userId: Option[String]): Configuration =
+		configure(get{{ variationsClassName }}(optimizely, userId))
+
+	private def configure(maybe{{ variationsClassName }}: Option[V]): Configuration =
+		maybe{{ variationsClassName }}
+			.map(Configuration(_, true))
+			.getOrElse(inactiveConfiguration)
+
+	private def get{{ variationsClassName }}(optimizely: Optimizely, userId: Option[String]): Option[V] =
+		Try(
+			visitorCookie.flatMap(get{{ variationsClassName }}(optimizely.activate(key, _)))
+		).toOption.flatten
+
+	private def get{{ variationsClassName }}(optimizelyVariation: Variation): Option[V] =
+		variants.find(optimizelyVariation.is(_.key))
+
+	case class Configuration(override val variant: V, override val active: Boolean) extends ExperimentConfiguration[V](this, variant, active)
+
+}
+
+object {{ className }}s {
+
+	{% for experiment in experiments %}
+	sealed trait {{ experiment.variationsClassName }} extends {{ variationsClassName }}
+
+	object {{ experiment.className }}Experiment extends Experiment[{{ experiment.variationsClassName }}] {
+		{% for variant in experiment.variations -%}
+		case object {{ variant.className }} extends {{ variationsClassName }}("{{ variant.key }}", {{ variant.id }}L)
+		{% endfor -%}
+		val variants: Seq[{{ experiment.variationsClassName }}] =
+			Set({{ experiment.variationsCsv }})
+		val key = "{{ experiment.key }}"
+		val id = {{ experiment.id }}L
+	}
+	{% endfor %}
+}
+
